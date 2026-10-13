@@ -1,0 +1,10 @@
+{
+  "domain": "gemini_ha_orchestrator",
+  "name": "Gemini HA Orchestrator",
+  "codeowners": ["@vas-github-profil"],
+  "dependencies": [],
+  "requirements": ["google-genai==0.1.1", "ruamel.yaml==0.18.6"],
+  "version": "1.0.0",
+  "iot_class": "cloud_polling",
+  "integration_type": "service"
+}
