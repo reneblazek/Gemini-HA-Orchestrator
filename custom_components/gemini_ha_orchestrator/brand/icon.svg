@@ -1,0 +1,169 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradients -->
+    <radialGradient id="bgGlow" cx="50%" cy="50%" r="65%">
+      <stop offset="0%" stop-color="#1e1b4b" stop-opacity="0.9" />
+      <stop offset="50%" stop-color="#0f172a" stop-opacity="0.95" />
+      <stop offset="100%" stop-color="#030712" stop-opacity="1" />
+    </radialGradient>
+
+    <!-- Gemini AI Glow Gradients -->
+    <linearGradient id="geminiGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa" />
+      <stop offset="35%" stop-color="#818cf8" />
+      <stop offset="70%" stop-color="#c084fc" />
+      <stop offset="100%" stop-color="#f472b6" />
+    </linearGradient>
+
+    <linearGradient id="houseStrokeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="50%" stop-color="#818cf8" />
+      <stop offset="100%" stop-color="#c084fc" />
+    </linearGradient>
+
+    <linearGradient id="circuitGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.2" />
+      <stop offset="50%" stop-color="#818cf8" stop-opacity="0.7" />
+      <stop offset="100%" stop-color="#f472b6" stop-opacity="0.9" />
+    </linearGradient>
+
+    <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#818cf8" stop-opacity="0.5" />
+      <stop offset="50%" stop-color="#c084fc" stop-opacity="0.2" />
+      <stop offset="100%" stop-color="#60a5fa" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Filters for Futuristic Neon Glow -->
+    <filter id="neonGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="12" result="blur1" />
+      <feGaussianBlur stdDeviation="24" result="blur2" />
+      <feMerge>
+        <feMergeNode in="blur2" />
+        <feMergeNode in="blur1" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <filter id="aiStarGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Base Rounded Squircle Backdrop -->
+  <rect x="16" y="16" width="480" height="480" rx="108" fill="url(#bgGlow)" stroke="#1e293b" stroke-width="3" />
+
+  <!-- Ambient Core Glow in the Center -->
+  <circle cx="256" cy="270" r="170" fill="url(#coreGlow)" />
+
+  <!-- Background Circuit & Constellation Lines -->
+  <g stroke="url(#circuitGrad)" stroke-width="2" stroke-linecap="round" opacity="0.65">
+    <!-- Left circuit paths -->
+    <path d="M 170 380 L 170 340 L 210 300" fill="none" />
+    <path d="M 130 310 L 170 310 L 200 280" fill="none" />
+    <!-- Right circuit paths -->
+    <path d="M 342 380 L 342 340 L 302 300" fill="none" />
+    <path d="M 382 310 L 342 310 L 312 280" fill="none" />
+    <!-- Top roof circuit traces -->
+    <path d="M 256 125 L 256 195" fill="none" />
+    <path d="M 200 168 L 225 195 L 225 230" fill="none" />
+    <path d="M 312 168 L 287 195 L 287 230" fill="none" />
+  </g>
+
+  <!-- Circuit Connection Dots / Nodes -->
+  <g fill="#38bdf8" filter="url(#softGlow)">
+    <circle cx="170" cy="380" r="4.5" fill="#38bdf8" />
+    <circle cx="130" cy="310" r="4" fill="#38bdf8" />
+    <circle cx="342" cy="380" r="4.5" fill="#f472b6" />
+    <circle cx="382" cy="310" r="4" fill="#f472b6" />
+    <circle cx="200" cy="168" r="3.5" fill="#60a5fa" />
+    <circle cx="312" cy="168" r="3.5" fill="#c084fc" />
+    <circle cx="256" cy="125" r="4.5" fill="#818cf8" />
+  </g>
+
+  <!-- Futuristic House Outline (Home Assistant Inspired) -->
+  <path d="M 256 90 
+           L 395 205 
+           Q 406 214 406 228 
+           L 406 384 
+           Q 406 404 386 404 
+           L 126 404 
+           Q 106 404 106 384 
+           L 106 228 
+           Q 106 214 117 205 
+           Z"
+        fill="#0b1120"
+        fill-opacity="0.6"
+        stroke="url(#houseStrokeGrad)"
+        stroke-width="14"
+        stroke-linejoin="round"
+        stroke-linecap="round"
+        filter="url(#neonGlow)" />
+
+  <!-- Inner House Modern Framing Arch -->
+  <path d="M 256 122 
+           L 378 224 
+           L 378 376 
+           L 134 376 
+           L 134 224 
+           Z"
+        fill="none"
+        stroke="#1e293b"
+        stroke-width="2.5"
+        stroke-dasharray="6 6"
+        opacity="0.8" />
+
+  <!-- Central Gemini AI Sparkle / Star (Iconic 4-Pointed Generative AI Diamond Star) -->
+  <g filter="url(#aiStarGlow)">
+    <!-- Primary Big Gemini Star -->
+    <path d="M 256 185 
+             Q 256 268 335 268 
+             Q 256 268 256 351 
+             Q 256 268 177 268 
+             Q 256 268 256 185 
+             Z" 
+          fill="url(#geminiGrad)" />
+
+    <!-- Core Bright Sparkle Overlay -->
+    <path d="M 256 215 
+             Q 256 268 307 268 
+             Q 256 268 256 321 
+             Q 256 268 205 268 
+             Q 256 268 256 215 
+             Z" 
+          fill="#ffffff" 
+          opacity="0.75" />
+  </g>
+
+  <!-- Secondary Gemini Sparkles (Accent AI stars) -->
+  <!-- Top Right Small Sparkle -->
+  <path d="M 345 195 
+           Q 345 215 365 215 
+           Q 345 215 345 235 
+           Q 345 215 325 215 
+           Q 345 215 345 195 
+           Z" 
+        fill="url(#geminiGrad)" 
+        filter="url(#softGlow)" />
+
+  <!-- Bottom Left Tiny Sparkle -->
+  <path d="M 165 325 
+           Q 165 338 178 338 
+           Q 165 338 165 351 
+           Q 165 338 152 338 
+           Q 165 338 165 325 
+           Z" 
+        fill="#38bdf8" 
+        filter="url(#softGlow)" />
+
+  <!-- Base AI Neural Interface Foundation Bar -->
+  <rect x="206" y="388" width="100" height="6" rx="3" fill="url(#geminiGrad)" filter="url(#softGlow)" />
+</svg>

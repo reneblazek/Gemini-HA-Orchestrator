@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="icon.svg" alt="Gemini HA Orchestrator Icon" width="140" height="140">
+</p>
+
 # Gemini HA Orchestrator
 
 [![HACS Custom](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://hacs.xyz/)
@@ -15,7 +19,7 @@ Gemini HA Orchestrator enables conversational and autonomous AI agents powered b
 - **AI Function Calling Definition**: Defines a structured Google Gemini tool schema (`save_blueprint_tool`) that instructs Gemini how to generate and submit valid Home Assistant blueprint code.
 - **Blueprint Management**: Safely sanitizes blueprint names, saves generated YAML code into Home Assistant's `blueprints/automation/` directory, and automatically triggers `blueprint.reload`.
 - **Safe Configuration Modification**: Uses `ruamel.yaml` to preserve comments and quote formatting when reading and writing configuration files.
-- **Home Assistant Service Handler**: Exposes the `gemini_ha.save_blueprint` service for execution within automations, scripts, or LLM agents.
+- **Home Assistant Service Handler**: Exposes the `gemini_ha_orchestrator.save_blueprint` service for execution within automations, scripts, or LLM agents.
 
 ---
 
@@ -49,7 +53,7 @@ Gemini-HA-Orchestrator/
 │       ├── config_flow.py      # UI configuration flow (TODO: implementation in progress)
 │       ├── const.py            # Integration constants and domain definitions (TODO)
 │       ├── manifest.json       # Home Assistant integration metadata & dependencies
-│       └── services.py         # GeminiFileModifier class & service registration (`gemini_ha.save_blueprint`)
+│       └── services.py         # GeminiFileModifier class & service registration (`gemini_ha_orchestrator.save_blueprint`)
 ├── hacs.json                   # HACS repository configuration
 ├── LICENSE                     # GNU General Public License v3.0 (GPL-3.0)
 └── README.md                   # Project documentation
@@ -79,7 +83,7 @@ Gemini-HA-Orchestrator/
 
 ## Services & Usage
 
-### Service: `gemini_ha.save_blueprint`
+### Service: `gemini_ha_orchestrator.save_blueprint`
 
 Saves or overwrites a Home Assistant blueprint file under `blueprints/automation/` and triggers a blueprint reload.
 
@@ -93,7 +97,7 @@ Saves or overwrites a Home Assistant blueprint file under `blueprints/automation
 #### Example Call (Developer Tools -> Services):
 
 ```yaml
-service: gemini_ha.save_blueprint
+service: gemini_ha_orchestrator.save_blueprint
 data:
   name: "morning_routine"
   yaml_code: |
