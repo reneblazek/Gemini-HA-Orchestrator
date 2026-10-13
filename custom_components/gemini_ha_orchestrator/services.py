@@ -4,66 +4,66 @@ from ruamel.yaml import YAML
 from homeassistant.core import HomeAssistant, ServiceCall
 
 _LOGGER = logging.getLogger(__name__)
-DOMAIN = "gemini_ha"
+DOMAIN = "gemini_ha_orchestrator"
 
 class GeminiFileModifier:
     def __init__(self, hass: HomeAssistant):
         self.hass = hass
         self.config_dir = hass.config.config_dir
         self.yaml = YAML()
-        self.yaml.preserve_quotes = True  # Zachová úvodzovky v HA kóde
+        self.yaml.preserve_quotes = True  # Preserves quotes in HA code
 
     def modify_configuration_yaml(self, domain_key: str, new_data: dict):
-        """Bezpečne pridá alebo zmení sekciu v hlavnom configuration.yaml."""
+        """Safely adds or modifies a section in the main configuration.yaml."""
         config_path = os.path.join(self.config_dir, "configuration.yaml")
 
         try:
             with open(config_path, "r", encoding="utf-8") as f:
                 config_data = self.yaml.load(f) or {}
 
-            # Aktualizácia dát pod konkrétnou doménou (napr. input_boolean:)
+            # Update data under a specific domain (e.g. input_boolean:)
             config_data[domain_key] = new_data
 
             with open(config_path, "w", encoding="utf-8") as f:
                 self.yaml.dump(config_data, f)
 
-            _LOGGER.info(f"Sekcia {domain_key} úspešne upravená v configuration.yaml")
+            _LOGGER.info(f"Section {domain_key} successfully updated in configuration.yaml")
             return True
         except Exception as e:
-            _LOGGER.error(f"Chyba pri zápise do configuration.yaml: {e}")
+            _LOGGER.error(f"Error writing to configuration.yaml: {e}")
             return False
 
     def save_blueprint(self, blueprint_name: str, yaml_content: str):
-        """Vytvorí alebo prepíše šablónu (Blueprint) v príslušnom priečinku."""
-        # Nastavenie cesty do blueprints/automation/
+        """Creates or overwrites a blueprint in the appropriate directory."""
+        # Set path to blueprints/automation/
         blueprint_dir = os.path.join(self.config_dir, "blueprints", "automation")
         os.makedirs(blueprint_dir, exist_ok=True)
 
-        # Očistenie názvu súboru od nebezpečných znakov
+        # Sanitize file name from unsafe characters
         safe_name = "".join([c if c.isalnum() else "_" for c in blueprint_name]).strip("_")
         file_path = os.path.join(blueprint_dir, f"{safe_name}.yaml")
 
         try:
-            # Gemini vráti čistý reťazec YAML kódu, ktorý zapíšeme
+            # Write raw YAML string returned by Gemini
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write(yaml_content)
 
-            _LOGGER.info(f"Blueprint {blueprint_name} bol úspešne uložený do {file_path}")
+            _LOGGER.info(f"Blueprint {blueprint_name} was successfully saved to {file_path}")
             return True
         except Exception as e:
-            _LOGGER.error(f"Nepodarilo sa uložiť Blueprint: {e}")
+            _LOGGER.error(f"Failed to save Blueprint: {e}")
             return False
 
 async def async_setup_services(hass: HomeAssistant):
-    """Zaregistruje akcie (Services), ktoré môže spúšťať systém alebo automatizácia."""
+    """Registers services that can be executed by the system or automation."""
     modifier = GeminiFileModifier(hass)
 
     async def handle_save_blueprint(call: ServiceCall):
         name = call.data.get("name")
         code = call.data.get("yaml_code")
-        # Keďže I/O operácie sú synchrónne, spustíme ich v executore
+        # Since I/O operations are synchronous, run them in the executor
         await hass.async_add_executor_job(modifier.save_blueprint, name, code)
-        # Po zápise povieme Home Assistantu, nech znova načíta šablóny
+        # After writing, notify Home Assistant to reload blueprints
         await hass.services.async_call("blueprint", "reload")
 
     hass.services.async_register(DOMAIN, "save_blueprint", handle_save_blueprint)
