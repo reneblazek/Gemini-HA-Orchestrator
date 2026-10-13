@@ -73,10 +73,17 @@ def _setup_mocks():
         ha_components_http.HomeAssistantView = HomeAssistantView
         ha_components.http = ha_components_http
 
+        ha_components_frontend = ModuleType("homeassistant.components.frontend")
+        ha_components_frontend.async_register_built_in_panel = MagicMock()
+        ha_components_frontend.async_remove_panel = MagicMock()
+        ha_components.frontend = ha_components_frontend
+
         ha.core = ha_core
         ha.config_entries = ha_config_entries
         ha.data_entry_flow = ha_data_entry_flow
         ha.components = ha_components
+        ha.components.http = ha_components_http
+        ha.components.frontend = ha_components_frontend
 
         sys.modules["homeassistant"] = ha
         sys.modules["homeassistant.core"] = ha_core
@@ -84,6 +91,7 @@ def _setup_mocks():
         sys.modules["homeassistant.data_entry_flow"] = ha_data_entry_flow
         sys.modules["homeassistant.components"] = ha_components
         sys.modules["homeassistant.components.http"] = ha_components_http
+        sys.modules["homeassistant.components.frontend"] = ha_components_frontend
 
 _setup_mocks()
 
@@ -191,12 +199,14 @@ class TestComponentLifecycle(unittest.TestCase):
 
     def test_async_setup_and_unload_entry(self):
         """Test async_setup_entry registers views and panel, and unload cleans up."""
+        import homeassistant.components.frontend as frontend_mod
+        frontend_mod.async_register_built_in_panel.reset_mock()
+        frontend_mod.async_remove_panel.reset_mock()
+
         hass = MagicMock()
         hass.data = {}
         hass.services.async_register = MagicMock()
         hass.http.register_view = MagicMock()
-        hass.components.frontend.async_register_built_in_panel = MagicMock()
-        hass.components.frontend.async_remove_panel = MagicMock()
 
         entry = MagicMock()
         entry.entry_id = "test_entry_123"
@@ -214,13 +224,44 @@ class TestComponentLifecycle(unittest.TestCase):
         self.assertTrue(res_setup)
         self.assertIn("test_entry_123", hass.data[DOMAIN])
         self.assertEqual(hass.http.register_view.call_count, 3)
-        hass.components.frontend.async_register_built_in_panel.assert_called_once()
+        frontend_mod.async_register_built_in_panel.assert_called_once()
+        args, kwargs = frontend_mod.async_register_built_in_panel.call_args
+        self.assertEqual(args[0], hass)
+        self.assertEqual(kwargs.get("component_name"), "iframe")
+        self.assertEqual(kwargs.get("url_path"), "gemini_console")
 
         # Unload entry
         res_unload = asyncio.run(async_unload_entry(hass, entry))
         self.assertTrue(res_unload)
         self.assertNotIn("test_entry_123", hass.data[DOMAIN])
-        hass.components.frontend.async_remove_panel.assert_called_once_with("gemini_console")
+        frontend_mod.async_remove_panel.assert_called_once_with(hass, "gemini_console")
+
+    def test_async_setup_entry_sidebar_disabled(self):
+        """Test setup when sidebar panel is disabled removes panel."""
+        import homeassistant.components.frontend as frontend_mod
+        frontend_mod.async_register_built_in_panel.reset_mock()
+        frontend_mod.async_remove_panel.reset_mock()
+
+        hass = MagicMock()
+        hass.data = {}
+        hass.services.async_register = MagicMock()
+        hass.http.register_view = MagicMock()
+
+        entry = MagicMock()
+        entry.entry_id = "test_entry_disabled"
+        entry.data = {
+            CONF_API_KEY: "test_key",
+            CONF_MODEL: DEFAULT_MODEL,
+            CONF_SIDEBAR_PANEL: False,
+        }
+        entry.options = {}
+        entry.add_update_listener = MagicMock()
+        entry.async_on_unload = MagicMock()
+
+        res_setup = asyncio.run(async_setup_entry(hass, entry))
+        self.assertTrue(res_setup)
+        frontend_mod.async_register_built_in_panel.assert_not_called()
+        frontend_mod.async_remove_panel.assert_called_once_with(hass, "gemini_console")
 
     def test_console_view_html(self):
         """Test console view delivers valid HTML."""

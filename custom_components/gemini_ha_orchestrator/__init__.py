@@ -22,6 +22,11 @@ from .views import GeminiChatApiView, GeminiConfirmApiView, GeminiConsoleView
 _LOGGER = logging.getLogger(__name__)
 
 try:
+    from homeassistant.components import frontend
+except Exception:
+    frontend = None
+
+try:
     from google import genai
     from google.genai import types
 
@@ -72,18 +77,40 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         sidebar_icon = config_data.get(CONF_SIDEBAR_ICON, DEFAULT_SIDEBAR_ICON)
 
         try:
-            if hasattr(hass.components, "frontend"):
-                hass.components.frontend.async_register_built_in_panel(
+            if frontend is not None:
+                frontend.async_register_built_in_panel(
+                    hass,
                     component_name="iframe",
                     sidebar_title=sidebar_title,
                     sidebar_icon=sidebar_icon,
                     url_path="gemini_console",
                     config={"url": "/api/gemini_ha_orchestrator/console"},
                     require_admin=False,
+                    update=True,
+                )
+                _LOGGER.info("Gemini Console registered in Home Assistant sidebar panel")
+            elif hasattr(hass.components, "frontend"):
+                hass.components.frontend.async_register_built_in_panel(
+                    hass,
+                    component_name="iframe",
+                    sidebar_title=sidebar_title,
+                    sidebar_icon=sidebar_icon,
+                    url_path="gemini_console",
+                    config={"url": "/api/gemini_ha_orchestrator/console"},
+                    require_admin=False,
+                    update=True,
                 )
                 _LOGGER.info("Gemini Console registered in Home Assistant sidebar panel")
         except Exception as e:
             _LOGGER.warning("Could not register sidebar panel: %s", e)
+    else:
+        try:
+            if frontend is not None:
+                frontend.async_remove_panel(hass, "gemini_console")
+            elif hasattr(hass.components, "frontend"):
+                hass.components.frontend.async_remove_panel(hass, "gemini_console")
+        except Exception as e:
+            _LOGGER.debug("Error removing sidebar panel: %s", e)
 
     # Listen for options updates
     entry.async_on_unload(entry.add_update_listener(async_reload_entry))
@@ -95,8 +122,10 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
     # Remove sidebar panel
     try:
-        if hasattr(hass.components, "frontend"):
-            hass.components.frontend.async_remove_panel("gemini_console")
+        if frontend is not None:
+            frontend.async_remove_panel(hass, "gemini_console")
+        elif hasattr(hass.components, "frontend"):
+            hass.components.frontend.async_remove_panel(hass, "gemini_console")
     except Exception as e:
         _LOGGER.debug("Error removing sidebar panel: %s", e)
 
