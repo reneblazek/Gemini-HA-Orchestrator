@@ -443,7 +443,7 @@ class GeminiConsoleView(HomeAssistantView):
     </div>
     <div class="header-badges">
       <div class="badge active" id="status-badge"><i class="fa-solid fa-circle"></i> Pripravený</div>
-      <div class="badge" id="model-badge"><i class="fa-solid fa-microchip"></i> gemini-2.5-flash</div>
+      <div class="badge" id="model-badge"><i class="fa-solid fa-microchip"></i> gemini-3.8-flash</div>
     </div>
   </header>
 

@@ -170,7 +170,7 @@ IMPORTANT RULES:
         self,
         config_dir: str = ".",
         api_key: Optional[str] = None,
-        model: str = "gemini-2.5-flash",
+        model: str = "gemini-3.8-flash",
         confirm_fn: Optional[Callable[[str, str, Optional[str], str], bool]] = None,
     ):
         self.config_dir = config_dir
@@ -545,7 +545,7 @@ IMPORTANT RULES:
                 print("  /help           - Zobrazí túto nápovedu / Show this help")
                 print("  /config         - Zobrazí aktuálne nastavenia / Show current configuration")
                 print("  /clear          - Vymaže históriu konverzácie / Clear chat history")
-                print("  /model <name>   - Zmení Gemini model (napr. gemini-2.5-flash, gemini-1.5-pro)")
+                print("  /model <name>   - Zmení Gemini model (napr. gemini-3.8-flash, gemini-3.8-pro, gemini-2.5-flash)")
                 print("  /exit, quit     - Ukončí konzolu / Exit console\n")
                 continue
             elif user_input.lower() == "/config":
@@ -597,8 +597,8 @@ def main():
     parser.add_argument(
         "--model",
         "-m",
-        default="gemini-2.5-flash",
-        help="Gemini model name (default: gemini-2.5-flash)",
+        default="gemini-3.8-flash",
+        help="Gemini model name (default: gemini-3.8-flash)",
     )
     parser.add_argument(
         "--prompt",

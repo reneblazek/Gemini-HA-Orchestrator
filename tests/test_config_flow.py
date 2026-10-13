@@ -152,7 +152,7 @@ class TestConfigFlow(unittest.TestCase):
 
         result = asyncio.run(flow.async_step_user(user_input={
             CONF_API_KEY: "test-gemini-key",
-            CONF_MODEL: "gemini-2.5-pro",
+            CONF_MODEL: "gemini-3.8-pro",
             CONF_SIDEBAR_PANEL: True,
         }))
         self.assertEqual(result["type"], "create_entry")
@@ -176,7 +176,7 @@ class TestConfigFlow(unittest.TestCase):
         # Step update
         res_save = asyncio.run(options_flow.async_step_init(user_input={
             CONF_API_KEY: "new-key",
-            CONF_MODEL: "gemini-2.5-pro",
+            CONF_MODEL: "gemini-3.8-pro",
         }))
         self.assertEqual(res_save["type"], "create_entry")
         self.assertEqual(res_save["data"][CONF_API_KEY], "new-key")

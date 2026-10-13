@@ -91,7 +91,7 @@ Gemini-HA-Orchestrator/
 
 1. In Home Assistant, go to **Settings (Nastavenia)** > **Devices & Services (Zariadenia a služby)** > **Add Integration (Pridať integráciu)**.
 2. Search for **Gemini HA Orchestrator**.
-3. Enter your **Google Gemini API Key** and choose your desired model (e.g., `gemini-2.5-flash`).
+3. Enter your **Google Gemini API Key** and choose your desired model (e.g., `gemini-3.8-flash`).
 4. Keep **Show Console in Sidebar Menu** checked to have the **Gemini AI** console icon added to your left sidebar.
 5. Click **Submit**.
 
@@ -129,7 +129,7 @@ Before any file is written, modified, or saved, the console:
 2. Available CLI Arguments:
    - `--config-dir`, `-c`: Path to Home Assistant configuration directory (default: current directory or `$HA_CONFIG_DIR`).
    - `--api-key`, `-k`: Google Gemini API key (default: `$GEMINI_API_KEY`).
-   - `--model`, `-m`: Gemini model (default: `gemini-2.5-flash`).
+   - `--model`, `-m`: Gemini model (default: `gemini-3.8-flash`).
    - `--prompt`, `-p`: Execute a single prompt directly in batch mode.
 
 3. In-Console Commands:
@@ -237,9 +237,7 @@ python3 -m unittest discover tests
 
 If you find this project helpful and want to support its ongoing development, feel free to buy me a coffee!
 
-<script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="reneblazek_apps" data-color="#FFDD00" data-emoji=""  data-font="Cookie" data-text="Buy me a coffee" data-outline-color="#000000" data-font-color="#000000" data-coffee-color="#ffffff" ></script>
-
-[![Buy Me A Coffee](https://raw.githubusercontent.com/buymeacoffee/Cookie-widget/master/assets/bmc-button.png)](https://www.buymeacoffee.com/reneblazek_apps)
+<a href="https://www.buymeacoffee.com/reneblazek_apps" target="_blank"><img src="https://img.buymeacoffee.com/button-api/?text=Buy%20me%20a%20coffee&emoji=&slug=reneblazek_apps&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff" alt="Buy Me A Coffee" /></a>
 
 ---
 

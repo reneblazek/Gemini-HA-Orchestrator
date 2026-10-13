@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ---
 
+## [1.1.4] - 2026-10-13
+
+### Changed
+- **Updated Default Gemini Model to `gemini-3.8-flash`**:
+  - Replaced deprecated `gemini-2.5-flash` with `gemini-3.8-flash` as default across `const.py`, `gemini_console.py`, Web Console UI, and documentation.
+  - Added `gemini-3.8-flash` and `gemini-3.8-pro` to the supported model list in `const.py`.
+  - Fixes `404 NOT_FOUND` API error (`This model models/gemini-2.5-flash is no longer available to new users`).
+
+### Fixed
+- **Buy Me a Coffee Badge in `README.md`**:
+  - Replaced non-rendering raw HTML `<script>` tag with a GitHub Markdown-compatible button badge widget and links.
+
+---
+
 ## [1.1.3] - 2026-10-13
 
 ### Fixed
