@@ -228,7 +228,7 @@ class TestComponentLifecycle(unittest.TestCase):
         args, kwargs = frontend_mod.async_register_built_in_panel.call_args
         self.assertEqual(args[0], hass)
         self.assertEqual(kwargs.get("component_name"), "iframe")
-        self.assertEqual(kwargs.get("url_path"), "gemini_console")
+        self.assertEqual(kwargs.get("frontend_url_path"), "gemini_console")
 
         # Unload entry
         res_unload = asyncio.run(async_unload_entry(hass, entry))
@@ -262,6 +262,32 @@ class TestComponentLifecycle(unittest.TestCase):
         self.assertTrue(res_setup)
         frontend_mod.async_register_built_in_panel.assert_not_called()
         frontend_mod.async_remove_panel.assert_called_once_with(hass, "gemini_console")
+
+    def test_services_yaml_exists_and_valid(self):
+        """Test that services.yaml exists and defines save_blueprint service."""
+        import os
+        services_file = os.path.join(
+            os.path.dirname(__file__), "..", "custom_components", "gemini_ha_orchestrator", "services.yaml"
+        )
+        self.assertTrue(os.path.exists(services_file), "services.yaml should exist")
+        with open(services_file, "r", encoding="utf-8") as f:
+            content = f.read()
+        self.assertIn("save_blueprint:", content)
+        self.assertIn("fields:", content)
+        self.assertIn("name:", content)
+        self.assertIn("yaml_code:", content)
+
+    def test_gemini_file_modifier_lazy_yaml(self):
+        """Test that GeminiFileModifier lazily initializes ruamel.yaml instance."""
+        from custom_components.gemini_ha_orchestrator.services import GeminiFileModifier
+        hass = MagicMock()
+        hass.config.config_dir = "/tmp"
+        modifier = GeminiFileModifier(hass)
+        self.assertIsNone(modifier._yaml)
+        yaml_inst = modifier.yaml
+        if yaml_inst is not None:
+            self.assertIsNotNone(modifier._yaml)
+            self.assertTrue(modifier.yaml.preserve_quotes)
 
     def test_console_view_html(self):
         """Test console view delivers valid HTML."""

@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ---
 
+## [1.1.3] - 2026-10-13
+
+### Fixed
+- **Resolved Blocking Calls in Event Loop**:
+  - Lazily initialized `ruamel.yaml` on first file access inside executor jobs instead of during component initialization on the main event loop, eliminating blocking `glob`, `iglob`, and `scandir` warnings.
+- **Sidebar Panel Registration**:
+  - Corrected parameter name from `url_path` to `frontend_url_path="gemini_console"` in `frontend.async_register_built_in_panel()`.
+- **Service Metadata Schema (`services.yaml`)**:
+  - Added missing `services.yaml` defining schema and UI selectors for the `gemini_ha_orchestrator.save_blueprint` service (`name` and `yaml_code` fields).
+- **Test Coverage**:
+  - Added unit test verifying existence and structure of `services.yaml`.
+  - Added unit test verifying lazy initialization behavior for `GeminiFileModifier.yaml`.
+
+---
+
 ## [1.1.1] - 2026-10-13
 
 ### Fixed

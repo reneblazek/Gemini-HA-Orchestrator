@@ -14,11 +14,15 @@ class GeminiFileModifier:
     def __init__(self, hass: HomeAssistant):
         self.hass = hass
         self.config_dir = hass.config.config_dir
-        if YAML:
-            self.yaml = YAML()
-            self.yaml.preserve_quotes = True  # Preserves quotes in HA code
-        else:
-            self.yaml = None
+        self._yaml = None
+
+    @property
+    def yaml(self):
+        """Lazy load ruamel.yaml YAML instance to avoid blocking event loop during initialization."""
+        if self._yaml is None and YAML is not None:
+            self._yaml = YAML()
+            self._yaml.preserve_quotes = True  # Preserves quotes in HA code
+        return self._yaml
 
     def modify_configuration_yaml(self, domain_key: str, new_data: dict):
         """Safely adds or modifies a section in the main configuration.yaml."""

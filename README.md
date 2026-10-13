@@ -7,6 +7,7 @@
 [![HACS Custom](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://hacs.xyz/)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL%203.0-blue.svg)](LICENSE)
 [![Python: 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/)
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-reneblazek__apps-yellow.svg)](https://www.buymeacoffee.com/reneblazek_apps)
 
 **Gemini HA Orchestrator** is a custom Home Assistant (HA) integration designed to bridge Google Gemini generative AI capabilities with Home Assistant automation orchestration. It provides Gemini function-calling tool definitions and integration services allowing AI models to safely write, modify, and reload Home Assistant blueprints and YAML configurations.
 
@@ -229,6 +230,16 @@ python3 -m unittest discover tests
 - [x] Add translation files (`translations/en.json`, `translations/sk.json`, `strings.json`).
 - [x] Add automated unit test suite (`tests/test_console.py`, `tests/test_config_flow.py`).
 - [ ] Add additional Gemini orchestration tools (e.g., automation verification, entity inspection).
+
+---
+
+## Support & Donation
+
+If you find this project helpful and want to support its ongoing development, feel free to buy me a coffee!
+
+<script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="reneblazek_apps" data-color="#FFDD00" data-emoji=""  data-font="Cookie" data-text="Buy me a coffee" data-outline-color="#000000" data-font-color="#000000" data-coffee-color="#ffffff" ></script>
+
+[![Buy Me A Coffee](https://raw.githubusercontent.com/buymeacoffee/Cookie-widget/master/assets/bmc-button.png)](https://www.buymeacoffee.com/reneblazek_apps)
 
 ---
 

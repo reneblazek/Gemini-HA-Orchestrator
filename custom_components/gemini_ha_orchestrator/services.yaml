@@ -1,0 +1,19 @@
+save_blueprint:
+  name: Save Blueprint
+  description: Creates a new Home Assistant Blueprint and saves it to the blueprints directory.
+  fields:
+    name:
+      name: Blueprint name
+      description: Blueprint file name without extension.
+      required: true
+      example: morning_routine
+      selector:
+        text:
+    yaml_code:
+      name: YAML Code
+      description: Complete valid YAML code of the blueprint.
+      required: true
+      example: "blueprint:\n  name: Motion Light\n  domain: automation\n..."
+      selector:
+        text:
+          multiline: true
