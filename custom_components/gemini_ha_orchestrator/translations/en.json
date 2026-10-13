@@ -1,0 +1,38 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Gemini HA Orchestrator Setup",
+        "description": "Configure your Google Gemini API connection and options for Home Assistant orchestration.",
+        "data": {
+          "api_key": "Google Gemini API Key",
+          "model": "Gemini Model",
+          "sidebar_panel": "Show Console in Sidebar Menu",
+          "sidebar_title": "Sidebar Menu Title",
+          "sidebar_icon": "Sidebar Icon (MDI icon)"
+        }
+      }
+    },
+    "error": {
+      "invalid_api_key": "Invalid or empty Gemini API key."
+    },
+    "abort": {
+      "already_configured": "Gemini HA Orchestrator is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Gemini HA Orchestrator Options",
+        "description": "Update your API key, active model, and sidebar settings.",
+        "data": {
+          "api_key": "Google Gemini API Key",
+          "model": "Gemini Model",
+          "sidebar_panel": "Show Console in Sidebar Menu",
+          "sidebar_title": "Sidebar Menu Title",
+          "sidebar_icon": "Sidebar Icon (MDI icon)"
+        }
+      }
+    }
+  }
+}

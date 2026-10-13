@@ -1,0 +1,38 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Nastavenie Gemini HA Orchestrator",
+        "description": "Nakonfigurujte pripojenie ku Google Gemini API a voľby pre integráciu s Home Assistant.",
+        "data": {
+          "api_key": "Google Gemini API kľúč",
+          "model": "Model Gemini",
+          "sidebar_panel": "Zobraziť konzolu v bočnom menu",
+          "sidebar_title": "Názov položky v menu",
+          "sidebar_icon": "Ikona v menu (MDI ikona)"
+        }
+      }
+    },
+    "error": {
+      "invalid_api_key": "Neplatný alebo prázdny Gemini API kľúč."
+    },
+    "abort": {
+      "already_configured": "Gemini HA Orchestrator je už nakonfigurovaný."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Možnosti Gemini HA Orchestrator",
+        "description": "Aktualizujte svoj API kľúč, aktívny model a nastavenia bočného menu.",
+        "data": {
+          "api_key": "Google Gemini API kľúč",
+          "model": "Model Gemini",
+          "sidebar_panel": "Zobraziť konzolu v bočnom menu",
+          "sidebar_title": "Názov položky v menu",
+          "sidebar_icon": "Ikona v menu (MDI ikona)"
+        }
+      }
+    }
+  }
+}

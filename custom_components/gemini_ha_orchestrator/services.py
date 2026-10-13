@@ -1,7 +1,11 @@
 import os
 import logging
-from ruamel.yaml import YAML
 from homeassistant.core import HomeAssistant, ServiceCall
+
+try:
+    from ruamel.yaml import YAML
+except ImportError:
+    YAML = None
 
 _LOGGER = logging.getLogger(__name__)
 DOMAIN = "gemini_ha_orchestrator"
@@ -10,22 +14,34 @@ class GeminiFileModifier:
     def __init__(self, hass: HomeAssistant):
         self.hass = hass
         self.config_dir = hass.config.config_dir
-        self.yaml = YAML()
-        self.yaml.preserve_quotes = True  # Preserves quotes in HA code
+        if YAML:
+            self.yaml = YAML()
+            self.yaml.preserve_quotes = True  # Preserves quotes in HA code
+        else:
+            self.yaml = None
 
     def modify_configuration_yaml(self, domain_key: str, new_data: dict):
         """Safely adds or modifies a section in the main configuration.yaml."""
         config_path = os.path.join(self.config_dir, "configuration.yaml")
 
         try:
-            with open(config_path, "r", encoding="utf-8") as f:
-                config_data = self.yaml.load(f) or {}
+            if self.yaml:
+                with open(config_path, "r", encoding="utf-8") as f:
+                    config_data = self.yaml.load(f) or {}
 
-            # Update data under a specific domain (e.g. input_boolean:)
-            config_data[domain_key] = new_data
+                config_data[domain_key] = new_data
 
-            with open(config_path, "w", encoding="utf-8") as f:
-                self.yaml.dump(config_data, f)
+                with open(config_path, "w", encoding="utf-8") as f:
+                    self.yaml.dump(config_data, f)
+            else:
+                import yaml
+                config_data = {}
+                if os.path.exists(config_path):
+                    with open(config_path, "r", encoding="utf-8") as f:
+                        config_data = yaml.safe_load(f) or {}
+                config_data[domain_key] = new_data
+                with open(config_path, "w", encoding="utf-8") as f:
+                    yaml.dump(config_data, f, sort_keys=False)
 
             _LOGGER.info(f"Section {domain_key} successfully updated in configuration.yaml")
             return True

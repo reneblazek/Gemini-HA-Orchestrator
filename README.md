@@ -16,7 +16,10 @@
 
 Gemini HA Orchestrator enables conversational and autonomous AI agents powered by the Google GenAI SDK to directly create and manage Home Assistant blueprints and configuration entries:
 
+- **UI Installation & Setup (Config Flow)**: Seamlessly set up and configure your Google Gemini API key, model selection, and preferences directly via Home Assistant UI (**Settings** > **Devices & Services** > **Add Integration**). No manual YAML configuration required.
+- **Home Assistant Sidebar Web Console**: An interactive Gemini AI console directly embedded into the Home Assistant left sidebar menu. Chat with Gemini, inspect files, and approve/reject changes with visual diff cards right inside your browser.
 - **AI Function Calling Definition**: Defines a structured Google Gemini tool schema (`save_blueprint_tool`) that instructs Gemini how to generate and submit valid Home Assistant blueprint code.
+- **Interactive CLI Console**: A standalone CLI assistant (`gemini_console.py`) allowing terminal-based chat with Google Gemini models with **mandatory human-in-the-loop confirmation (diff preview + prompt)** before applying any filesystem change.
 - **Blueprint Management**: Safely sanitizes blueprint names, saves generated YAML code into Home Assistant's `blueprints/automation/` directory, and automatically triggers `blueprint.reload`.
 - **Safe Configuration Modification**: Uses `ruamel.yaml` to preserve comments and quote formatting when reading and writing configuration files.
 - **Home Assistant Service Handler**: Exposes the `gemini_ha_orchestrator.save_blueprint` service for execution within automations, scripts, or LLM agents.
@@ -39,7 +42,7 @@ Gemini HA Orchestrator enables conversational and autonomous AI agents powered b
 
 - Home Assistant Core 2024.x or newer
 - Python 3.12+ (matching your Home Assistant runtime)
-- Google Gemini API Key (see [Environment Variables & Configuration](#environment-variables--configuration))
+- Google Gemini API Key
 
 ---
 
@@ -49,11 +52,16 @@ Gemini HA Orchestrator enables conversational and autonomous AI agents powered b
 Gemini-HA-Orchestrator/
 ├── custom_components/
 │   └── gemini_ha_orchestrator/
-│       ├── __init__.py         # Component init & Gemini Tool definition (`save_blueprint_tool`)
-│       ├── config_flow.py      # UI configuration flow (TODO: implementation in progress)
-│       ├── const.py            # Integration constants and domain definitions (TODO)
+│       ├── __init__.py         # Component init, lifecycle & sidebar panel registration
+│       ├── config_flow.py      # UI configuration flow & options flow
+│       ├── const.py            # Integration constants and model definitions
 │       ├── manifest.json       # Home Assistant integration metadata & dependencies
-│       └── services.py         # GeminiFileModifier class & service registration (`gemini_ha_orchestrator.save_blueprint`)
+│       ├── services.py         # GeminiFileModifier class & service registration
+│       ├── views.py            # Web Console frontend & REST API endpoints
+│       ├── strings.json        # Base translation keys for config flow
+│       └── translations/       # UI translations (en.json, sk.json)
+├── gemini_console.py           # Interactive CLI console with human-in-the-loop confirmation
+├── tests/                      # Automated unit tests (console, config flow, lifecycle)
 ├── hacs.json                   # HACS repository configuration
 ├── LICENSE                     # GNU General Public License v3.0 (GPL-3.0)
 └── README.md                   # Project documentation
@@ -63,21 +71,72 @@ Gemini-HA-Orchestrator/
 
 ## Installation & Setup
 
-### Option 1: Manual Installation
+### 1. Install the Integration Files
 
+#### Option A: Via HACS (Custom Repository)
+1. Open **HACS** in your Home Assistant instance.
+2. Go to **Integrations** > Three dots menu (top right) > **Custom repositories**.
+3. Add this repository URL, select category **Integration**, and click **Add**.
+4. Download **Gemini HA Orchestrator** and restart Home Assistant.
+
+#### Option B: Manual Installation
 1. Copy the `custom_components/gemini_ha_orchestrator` folder into your Home Assistant `<config>/custom_components/` directory:
    ```bash
    cp -r custom_components/gemini_ha_orchestrator /path/to/homeassistant/config/custom_components/
    ```
 2. Restart Home Assistant.
-3. Home Assistant will automatically install the requirements listed in `manifest.json` (`google-genai==0.1.1` and `ruamel.yaml==0.18.6`).
 
-### Option 2: HACS (Custom Repository)
+### 2. Add Integration via UI (No `configuration.yaml` editing required!)
 
-1. Open **HACS** in your Home Assistant instance.
-2. Go to **Integrations** > Three dots menu (top right) > **Custom repositories**.
-3. Add this repository URL, select category **Integration**, and click **Add**.
-4. Download the integration and restart Home Assistant.
+1. In Home Assistant, go to **Settings (Nastavenia)** > **Devices & Services (Zariadenia a služby)** > **Add Integration (Pridať integráciu)**.
+2. Search for **Gemini HA Orchestrator**.
+3. Enter your **Google Gemini API Key** and choose your desired model (e.g., `gemini-2.5-flash`).
+4. Keep **Show Console in Sidebar Menu** checked to have the **Gemini AI** console icon added to your left sidebar.
+5. Click **Submit**.
+
+---
+
+## 🖥️ Home Assistant Sidebar Console
+
+Once configured, **Gemini HA Orchestrator** adds an interactive **Gemini AI** panel to your Home Assistant sidebar menu:
+
+- **Live Chat**: Chat directly with Google Gemini models inside Home Assistant.
+- **Safety Diff Cards**: When Gemini generates a blueprint or suggests modifying a configuration file, it presents a visual diff card with `[✅ Schváliť / Approve]` and `[❌ Odmietnuť / Reject]` buttons.
+- **One-Click Blueprint Reload**: Approved blueprints are saved directly to `blueprints/automation/` and Home Assistant automatically reloads them.
+
+---
+
+## Interactive CLI Console (`gemini_console.py`)
+
+Gemini HA Orchestrator includes a standalone interactive command-line console (`gemini_console.py`) designed to converse directly with Google Gemini AI models. Gemini can inspect files, generate blueprints, and propose configuration adjustments, while keeping **you firmly in control**.
+
+### 🛡️ Human-in-the-Loop Safety Guard
+Before any file is written, modified, or saved, the console:
+1. Displays the target file path and the proposed action.
+2. Renders a colored unified diff (for edits) or full preview (for new files).
+3. Prompts: `Súhlasíte s vykonaním tejto zmeny? / Do you confirm this action? [y/N]:`
+4. If you decline (`n`), the modification is cancelled immediately and Gemini is notified.
+
+### Running the Console
+
+1. Export your Gemini API Key and run:
+   ```bash
+   export GEMINI_API_KEY="your-google-gemini-api-key"
+   python3 gemini_console.py --config-dir /path/to/homeassistant/config
+   ```
+
+2. Available CLI Arguments:
+   - `--config-dir`, `-c`: Path to Home Assistant configuration directory (default: current directory or `$HA_CONFIG_DIR`).
+   - `--api-key`, `-k`: Google Gemini API key (default: `$GEMINI_API_KEY`).
+   - `--model`, `-m`: Gemini model (default: `gemini-2.5-flash`).
+   - `--prompt`, `-p`: Execute a single prompt directly in batch mode.
+
+3. In-Console Commands:
+   - `/help`: Display list of commands.
+   - `/config`: Show current configuration directory and model.
+   - `/model <name>`: Switch active Gemini model on the fly.
+   - `/clear`: Clear conversation history.
+   - `/exit` or `quit`: Exit the console.
 
 ---
 
@@ -124,10 +183,10 @@ data:
 
 ## Environment Variables & Configuration
 
-- **`GEMINI_API_KEY`**: Set in your environment or secrets for authenticating with Google Gemini models when orchestrating with the `google-genai` library.
+- **`GEMINI_API_KEY`**: Set in your environment or entered during the UI setup flow when adding the integration in Home Assistant.
 - **Home Assistant Configuration**:
-  - *TODO*: UI configuration flow (`config_flow.py`) and options flow are currently in development.
-  - *TODO*: Integration setup hooks (`async_setup` / `async_setup_entry`) in `__init__.py` to automatically register services upon integration load.
+  - UI Config Flow (`config_flow.py`) and Options Flow enabled.
+  - Setup hooks (`async_setup` / `async_setup_entry`) automatically initialize services, web views, and sidebar panels.
 
 ---
 
@@ -149,26 +208,26 @@ To work on this integration locally:
    ```
 3. Install dependencies:
    ```bash
-   pip install google-genai==0.1.1 ruamel.yaml==0.18.6 homeassistant
+   pip install google-genai==0.1.1 ruamel.yaml==0.18.6
    ```
 
 ### Tests
 
-- *TODO*: Automated test suite (e.g., using `pytest` and `pytest-homeassistant-custom-component`) is not yet implemented.
-- Recommended test run once configured:
-  ```bash
-  pytest tests/
-  ```
+Run unit tests covering the CLI console, config flow, lifecycle, and views:
+```bash
+python3 -m unittest discover tests
+```
 
 ---
 
 ## Roadmap & TODOs
 
-- [ ] Complete `custom_components/gemini_ha_orchestrator/const.py` with domain constants and configuration keys.
-- [ ] Implement `custom_components/gemini_ha_orchestrator/config_flow.py` for UI setup in Home Assistant.
-- [ ] Connect `async_setup_services` to `async_setup` / `async_setup_entry` in `__init__.py`.
-- [ ] Add translation files (`translations/en.json`, `strings.json`) for user-facing strings.
-- [ ] Add automated unit and integration tests using `pytest-homeassistant-custom-component`.
+- [x] Complete `custom_components/gemini_ha_orchestrator/const.py` with domain constants and configuration keys.
+- [x] Implement `custom_components/gemini_ha_orchestrator/config_flow.py` for UI setup in Home Assistant.
+- [x] Implement Home Assistant Sidebar panel integration for Web Console.
+- [x] Connect `async_setup_services` and Web views in `__init__.py`.
+- [x] Add translation files (`translations/en.json`, `translations/sk.json`, `strings.json`).
+- [x] Add automated unit test suite (`tests/test_console.py`, `tests/test_config_flow.py`).
 - [ ] Add additional Gemini orchestration tools (e.g., automation verification, entity inspection).
 
 ---
