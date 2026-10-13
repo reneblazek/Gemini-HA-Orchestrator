@@ -157,6 +157,7 @@ class TestConfigFlow(unittest.TestCase):
         config_entry.data = {CONF_API_KEY: "key1", CONF_MODEL: DEFAULT_MODEL}
         config_entry.options = {}
 
+        # Test both instantiations
         options_flow = GeminiHAOptionsFlow(config_entry)
         options_flow.hass = MagicMock()
 
@@ -171,6 +172,10 @@ class TestConfigFlow(unittest.TestCase):
         }))
         self.assertEqual(res_save["type"], "create_entry")
         self.assertEqual(res_save["data"][CONF_API_KEY], "new-key")
+
+        # Test factory callback
+        flow_from_factory = GeminiHAConfigFlow.async_get_options_flow(config_entry)
+        self.assertIsInstance(flow_from_factory, GeminiHAOptionsFlow)
 
 
 class TestComponentLifecycle(unittest.TestCase):

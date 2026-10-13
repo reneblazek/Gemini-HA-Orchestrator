@@ -4,7 +4,7 @@ from homeassistant.core import HomeAssistant, ServiceCall
 
 try:
     from ruamel.yaml import YAML
-except ImportError:
+except Exception:
     YAML = None
 
 _LOGGER = logging.getLogger(__name__)

@@ -78,9 +78,15 @@ class GeminiHAConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 class GeminiHAOptionsFlow(config_entries.OptionsFlow):
     """Handle options flow for Gemini HA Orchestrator."""
 
-    def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
+    def __init__(self, config_entry: config_entries.ConfigEntry | None = None) -> None:
         """Initialize options flow."""
-        self.config_entry = config_entry
+        if config_entry is not None:
+            self._config_entry = config_entry
+
+    @property
+    def _entry(self) -> config_entries.ConfigEntry | None:
+        """Get config entry safely."""
+        return getattr(self, "config_entry", None) or getattr(self, "_config_entry", None)
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
@@ -91,7 +97,8 @@ class GeminiHAOptionsFlow(config_entries.OptionsFlow):
         if user_input is not None:
             return self.async_create_entry(title="", data=user_input)
 
-        current_config = {**self.config_entry.data, **self.config_entry.options}
+        entry = self._entry
+        current_config = {**entry.data, **entry.options} if entry else {}
 
         schema = vol.Schema(
             {

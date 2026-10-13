@@ -42,7 +42,7 @@ try:
             )
         ]
     )
-except ImportError:
+except Exception:
     save_blueprint_tool = None
 
 
