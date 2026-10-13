@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ---
 
+## [1.1.1] - 2026-10-13
+
+### Fixed
+- **Config Flow 500 Internal Server Error**:
+  - Resolved `500 Internal Server Error` preventing the config flow from loading during integration setup in Home Assistant.
+  - Removed internal core integration names (`frontend`, `http`) from `manifest.json` `dependencies`.
+  - Loosened package requirement pins (`google-genai>=0.1.1`, `ruamel.yaml>=0.18.6`) to prevent pip resolution conflicts during installation.
+  - Added `"single_config_entry": true` to `manifest.json` ensuring single-instance integration management.
+  - Fixed `GeminiHAOptionsFlow` to avoid setting the read-only `config_entry` property directly in modern Home Assistant (2024.4+).
+  - Hardened optional library import exception handling in `__init__.py` and `services.py` to prevent uncaught runtime exceptions during startup.
+- **Test Coverage**:
+  - Added unit tests for `GeminiHAOptionsFlow` instantiation variants and the options flow factory callback.
+
+---
+
 ## [1.1.0] - 2026-10-13
 
 ### Added
