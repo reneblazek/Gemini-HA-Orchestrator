@@ -6,13 +6,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ---
 
+## [1.1.5] - 2026-10-13
+
+### Changed
+- **Verified Gemini Models List**:
+  - Cleaned up `AVAILABLE_MODELS` to include active and supported models: `gemini-3.8-flash`, `gemini-2.0-flash`, `gemini-1.5-flash`, and `gemini-1.5-pro`.
+  - Removed unavailable model references (`gemini-3.8-pro`, `gemini-2.5-flash`, `gemini-2.5-pro`) to eliminate `404 NOT_FOUND` errors.
+
+### Fixed
+- **Dynamic Model Header Badge in Web Console**:
+  - Fixed an issue where the Web Console top header badge statically displayed `gemini-3.8-flash` even when a different model was selected in integration settings.
+  - The Web Console now dynamically extracts the active model configured in `config_entries` / integration options on load and synchronizes it across API chat responses.
+
+### Added
+- **Unit Tests for Web Console Model Rendering**:
+  - Added unit test cases verifying correct dynamic rendering of both default and custom configured model names in `GeminiConsoleView`.
+
+---
+
 ## [1.1.4] - 2026-10-13
 
 ### Changed
 - **Updated Default Gemini Model to `gemini-3.8-flash`**:
   - Replaced deprecated `gemini-2.5-flash` with `gemini-3.8-flash` as default across `const.py`, `gemini_console.py`, Web Console UI, and documentation.
-  - Added `gemini-3.8-flash` and `gemini-3.8-pro` to the supported model list in `const.py`.
-  - Fixes `404 NOT_FOUND` API error (`This model models/gemini-2.5-flash is no longer available to new users`).
+  - Added valid Gemini models (`gemini-3.8-flash`, `gemini-2.0-flash`, `gemini-1.5-flash`, `gemini-1.5-pro`) to `AVAILABLE_MODELS`.
+  - Fixes `404 NOT_FOUND` API errors for deprecated/unsupported models.
 
 ### Fixed
 - **Buy Me a Coffee Badge in `README.md`**:

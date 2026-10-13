@@ -545,7 +545,7 @@ IMPORTANT RULES:
                 print("  /help           - Zobrazí túto nápovedu / Show this help")
                 print("  /config         - Zobrazí aktuálne nastavenia / Show current configuration")
                 print("  /clear          - Vymaže históriu konverzácie / Clear chat history")
-                print("  /model <name>   - Zmení Gemini model (napr. gemini-3.8-flash, gemini-3.8-pro, gemini-2.5-flash)")
+                print("  /model <name>   - Zmení Gemini model (napr. gemini-3.8-flash, gemini-2.0-flash, gemini-1.5-flash, gemini-1.5-pro)")
                 print("  /exit, quit     - Ukončí konzolu / Exit console\n")
                 continue
             elif user_input.lower() == "/config":

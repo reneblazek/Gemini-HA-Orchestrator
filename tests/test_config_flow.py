@@ -152,7 +152,7 @@ class TestConfigFlow(unittest.TestCase):
 
         result = asyncio.run(flow.async_step_user(user_input={
             CONF_API_KEY: "test-gemini-key",
-            CONF_MODEL: "gemini-3.8-pro",
+            CONF_MODEL: "gemini-1.5-pro",
             CONF_SIDEBAR_PANEL: True,
         }))
         self.assertEqual(result["type"], "create_entry")
@@ -176,7 +176,7 @@ class TestConfigFlow(unittest.TestCase):
         # Step update
         res_save = asyncio.run(options_flow.async_step_init(user_input={
             CONF_API_KEY: "new-key",
-            CONF_MODEL: "gemini-3.8-pro",
+            CONF_MODEL: "gemini-1.5-pro",
         }))
         self.assertEqual(res_save["type"], "create_entry")
         self.assertEqual(res_save["data"][CONF_API_KEY], "new-key")
@@ -290,13 +290,31 @@ class TestComponentLifecycle(unittest.TestCase):
             self.assertTrue(modifier.yaml.preserve_quotes)
 
     def test_console_view_html(self):
-        """Test console view delivers valid HTML."""
+        """Test console view delivers valid HTML with default model."""
         hass = MagicMock()
+        hass.data = {}
         view = GeminiConsoleView(hass)
         response = asyncio.run(view.get(MagicMock()))
         self.assertEqual(response.status, 200)
         self.assertEqual(response.content_type, "text/html")
         self.assertIn("Gemini HA Orchestrator", response.text)
+        self.assertIn(f'<div class="badge" id="model-badge"><i class="fa-solid fa-microchip"></i> {DEFAULT_MODEL}</div>', response.text)
+
+    def test_console_view_html_custom_model(self):
+        """Test console view displays custom model configured in integration."""
+        hass = MagicMock()
+        hass.data = {
+            DOMAIN: {
+                "entry_1": {
+                    CONF_API_KEY: "test_key",
+                    CONF_MODEL: "gemini-1.5-pro",
+                }
+            }
+        }
+        view = GeminiConsoleView(hass)
+        response = asyncio.run(view.get(MagicMock()))
+        self.assertEqual(response.status, 200)
+        self.assertIn('<div class="badge" id="model-badge"><i class="fa-solid fa-microchip"></i> gemini-1.5-pro</div>', response.text)
 
     def test_confirm_view_cancellation(self):
         """Test confirmation view rejection."""

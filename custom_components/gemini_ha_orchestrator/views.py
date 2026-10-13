@@ -34,6 +34,19 @@ class GeminiConsoleView(HomeAssistantView):
 
     async def get(self, request: web.Request) -> web.Response:
         """Render the Web Console interface."""
+        entry_data = {}
+        if DOMAIN in getattr(self.hass, "data", {}) and self.hass.data[DOMAIN]:
+            for entry_val in self.hass.data[DOMAIN].values():
+                if isinstance(entry_val, dict):
+                    entry_data = entry_val
+                    break
+
+        if not entry_data and hasattr(self.hass, "config_entries") and hasattr(self.hass.config_entries, "async_entries"):
+            for entry in self.hass.config_entries.async_entries(DOMAIN):
+                entry_data = {**entry.data, **getattr(entry, "options", {})}
+                break
+
+        model_name = entry_data.get(CONF_MODEL, DEFAULT_MODEL)
         html_content = """<!DOCTYPE html>
 <html lang="sk">
 <head>
@@ -443,7 +456,7 @@ class GeminiConsoleView(HomeAssistantView):
     </div>
     <div class="header-badges">
       <div class="badge active" id="status-badge"><i class="fa-solid fa-circle"></i> Pripravený</div>
-      <div class="badge" id="model-badge"><i class="fa-solid fa-microchip"></i> gemini-3.8-flash</div>
+      <div class="badge" id="model-badge"><i class="fa-solid fa-microchip"></i> __MODEL_NAME__</div>
     </div>
   </header>
 
@@ -627,6 +640,13 @@ class GeminiConsoleView(HomeAssistantView):
         const loading = document.getElementById('loading-msg');
         if (loading) loading.remove();
 
+        if (data.model) {
+          const modelBadge = document.getElementById('model-badge');
+          if (modelBadge) {
+            modelBadge.innerHTML = `<i class="fa-solid fa-microchip"></i> ${data.model}`;
+          }
+        }
+
         if (data.confirmation_required) {
           if (data.message) {
             appendMessage('assistant', data.message);
@@ -651,7 +671,8 @@ class GeminiConsoleView(HomeAssistantView):
   </script>
 </body>
 </html>"""
-        return web.Response(text=html_content, content_type="text/html")
+        rendered_html = html_content.replace("__MODEL_NAME__", model_name)
+        return web.Response(text=rendered_html, content_type="text/html")
 
 
 class GeminiChatApiView(HomeAssistantView):
@@ -678,17 +699,25 @@ class GeminiChatApiView(HomeAssistantView):
 
         # Retrieve integration config
         entry_data = {}
-        for entry in self.hass.config_entries.async_entries(DOMAIN):
-            entry_data = {**entry.data, **entry.options}
-            break
+        if DOMAIN in getattr(self.hass, "data", {}) and self.hass.data[DOMAIN]:
+            for entry_val in self.hass.data[DOMAIN].values():
+                if isinstance(entry_val, dict):
+                    entry_data = entry_val
+                    break
+
+        if not entry_data and hasattr(self.hass, "config_entries") and hasattr(self.hass.config_entries, "async_entries"):
+            for entry in self.hass.config_entries.async_entries(DOMAIN):
+                entry_data = {**entry.data, **getattr(entry, "options", {})}
+                break
 
         api_key = entry_data.get(CONF_API_KEY) or os.getenv("GEMINI_API_KEY", "")
         model_name = entry_data.get(CONF_MODEL, DEFAULT_MODEL)
-        config_dir = self.hass.config.config_dir
+        config_dir = getattr(self.hass.config, "config_dir", ".")
 
         if not api_key:
             return web.json_response({
-                "reply": "⚠️ Google Gemini API kľúč nie je nakonfigurovaný. Prosím nastavte ho v Home Assistant Integráciách alebo cez premennú prostredia `GEMINI_API_KEY`."
+                "reply": "⚠️ Google Gemini API kľúč nie je nakonfigurovaný. Prosím nastavte ho v Home Assistant Integráciách alebo cez premennú prostredia `GEMINI_API_KEY`.",
+                "model": model_name,
             })
 
         # Process message with Google GenAI SDK in executor
@@ -700,10 +729,12 @@ class GeminiChatApiView(HomeAssistantView):
                 model_name,
                 config_dir,
             )
+            if isinstance(result, dict):
+                result.setdefault("model", model_name)
             return web.json_response(result)
         except Exception as e:
             _LOGGER.exception(f"Error calling Gemini: {e}")
-            return web.json_response({"error": str(e)}, status=500)
+            return web.json_response({"error": str(e), "model": model_name}, status=500)
 
     def _process_gemini_message(
         self,
